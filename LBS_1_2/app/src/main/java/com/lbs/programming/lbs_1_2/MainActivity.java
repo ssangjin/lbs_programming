@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -132,11 +131,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLocationChanged(Location location) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (location != null && location.isFromMockProvider() == false) {
-                latitudeTextView.setText(Double.toString(location.getLatitude()));
-                longitudeTextView.setText(Double.toString(location.getLongitude()));
-            }
+        if (location != null) {
+            latitudeTextView.setText(Double.toString(location.getLatitude()));
+            longitudeTextView.setText(Double.toString(location.getLongitude()));
         }
     }
 }
