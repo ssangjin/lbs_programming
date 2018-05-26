@@ -13,7 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+// TODO: LocationListener 구현.
+public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private LocationManager locationManager;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         latitudeTextView = findViewById(R.id.textViewLatitude);
         longitudeTextView = findViewById(R.id.textViewLongitude);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // TODO: LocationManager 객체 얻어오기(getSystemService 사용)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
@@ -63,8 +64,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             return;
         }
 
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        onLocationChanged(location);
+        // TODO: LocationManager에서 초기 위치를 받음. getLastKnownLocation
+
+        // TODO: onLocationChanged를 호출하여 화면 업데이트.
     }
 
     @Override
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             return;
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        // TODO: requestLocationUpdates 호출
     }
 
     @Override
@@ -84,31 +86,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             return;
         }
 
-        locationManager.removeUpdates(this);
+        // TODO: removeUpdates 호출
 
         super.onPause();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location != null) {
-            latitudeTextView.setText(Double.toString(location.getLatitude()));
-            longitudeTextView.setText(Double.toString(location.getLongitude()));
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
+    // onLocationChanged 구현. TextView에 값을 넣어줌.
 }
