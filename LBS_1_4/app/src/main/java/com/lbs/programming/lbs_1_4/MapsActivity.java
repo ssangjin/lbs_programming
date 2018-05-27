@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MY_PERMISSIONS_REQUEST_LOCATION);
         }
 
-        geofencingClient = LocationServices.getGeofencingClient(this);
+        // TODO: getGeofencingClient
 
         createGeofenceObject();
         GeofencingRequest geofencingRequest = getGeofencingRequest();
@@ -100,37 +100,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private PendingIntent getGeofencePendingIntent() {
-        // Reuse the PendingIntent if we already have it.
-        if (geofencePendingIntent != null) {
-            return geofencePendingIntent;
-        }
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
-        // calling addGeofences() and removeGeofences().
-        geofencePendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        return geofencePendingIntent;
+        // todo: return GeofencePendingIntent
+        return null;
     }
 
     private void createGeofenceObject() {
-        geofenceList.add(new Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
-                .setRequestId("용산")
-                .setCircularRegion(
-                        37.528168, 126.981895,
-                        800
-                )
-                .setExpirationDuration(30 * 60 * 1000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build());
+        // TODO: create Geofence Object
     }
 
     private GeofencingRequest getGeofencingRequest() {
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.addGeofences(geofenceList);
-        return builder.build();
+        // TODO: get Geofencing Request
+        return null;
     }
 
     private void removeGeofence() {
