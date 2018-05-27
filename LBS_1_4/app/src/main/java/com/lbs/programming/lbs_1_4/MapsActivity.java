@@ -1,6 +1,7 @@
 package com.lbs.programming.lbs_1_4;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,9 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -22,17 +26,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
 
     private GoogleMap googleMap;
+    private GeofencingClient geofencingClient;
+
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -40,6 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
     private Location lastLocation;
+    private List<Geofence> geofenceList = new ArrayList<>();
+    private PendingIntent geofencePendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +68,89 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
         }
+
+        geofencingClient = LocationServices.getGeofencingClient(this);
+
+        createGeofenceObject();
+        GeofencingRequest geofencingRequest = getGeofencingRequest();
+        startGeofence(geofencingRequest);
     }
 
+    private void startGeofence(GeofencingRequest geofencingRequest) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Geofences added
+                        Toast.makeText(MapsActivity.this, "Geofences added", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to add geofences
+                        Toast.makeText(MapsActivity.this, "Failed to add geofences", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        }
+        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        geofencePendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return geofencePendingIntent;
+    }
+
+    private void createGeofenceObject() {
+        geofenceList.add(new Geofence.Builder()
+                // Set the request ID of the geofence. This is a string to identify this
+                // geofence.
+                .setRequestId("용산")
+                .setCircularRegion(
+                        37.528168, 126.981895,
+                        800
+                )
+                .setExpirationDuration(30 * 60 * 1000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build());
+    }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
+    }
+
+    private void removeGeofence() {
+        geofencingClient.removeGeofences(getGeofencePendingIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Geofences removed
+                        Toast.makeText(MapsActivity.this, "Geofences removed", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to remove geofences
+                        Toast.makeText(MapsActivity.this, "Failed to remove geofences", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
 
     /**
      * Manipulates the map once available.
@@ -102,25 +195,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
 
-        Polygon polygon1 = googleMap.addPolygon(new PolygonOptions()
-                .clickable(true)
-                .add(
-                        new LatLng(37.534491, 126.975930),
-                        new LatLng(37.529340, 126.974874),
-                        new LatLng(37.529349, 126.969751),
-                        new LatLng(37.526405, 126.969468),
-                        new LatLng(37.522454, 126.974521),
-                        new LatLng(37.520226, 126.989609),
-                        new LatLng(37.529851, 126.991286),
-                        new LatLng(37.535112, 126.986233),
-                        new LatLng(37.534569, 126.975796)));
+
+        Circle circle = googleMap.addCircle(new CircleOptions().clickable(true)
+                .center(new LatLng(37.528168, 126.981895))
+                .radius(800));
         // Store a data object with the polygon, used here to indicate an arbitrary type.
-        polygon1.setTag("용산공원");
-        polygon1.setFillColor(0x7fFF0000);
-        googleMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+        circle.setTag("용산공원");
+        circle.setFillColor(0x7fFF0000);
+        googleMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
             @Override
-            public void onPolygonClick(Polygon polygon) {
-                Toast.makeText(getBaseContext(), polygon.getTag().toString(), Toast.LENGTH_LONG).show();
+            public void onCircleClick(Circle circle) {
+                Toast.makeText(getBaseContext(), circle.getTag().toString(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -203,6 +288,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeGeofence();
+        super.onDestroy();
     }
 
     public void onLocationChanged(Location location) {
