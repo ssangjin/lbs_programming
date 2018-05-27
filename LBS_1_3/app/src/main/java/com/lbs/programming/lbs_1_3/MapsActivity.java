@@ -18,21 +18,15 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+// TODO: MapsReadyCallback 구현.
+public class MapsActivity extends FragmentActivity {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
 
-    private GoogleMap googleMap;
+    // TODO: googlemaps 객체 생성.
+    // private GoogleMap googleMap;
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -46,9 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        // TODO: mapsAsync 실행.
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
@@ -68,62 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng seoul = new LatLng(37.553192, 126.972579);
-
-        this.googleMap.addMarker(new MarkerOptions().position(seoul).title("Marker in Seoul"));
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        this.googleMap.setMyLocationEnabled(true);
-        this.googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (lastLocation != null) {
-                    MapsActivity.this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
-                }
-                return false;
-            }
-        });
-
-        this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-        this.googleMap.setIndoorEnabled(true);
-        this.googleMap.getUiSettings().setMapToolbarEnabled(true);
-        this.googleMap.getUiSettings().setAllGesturesEnabled(true);
-        this.googleMap.getUiSettings().setCompassEnabled(true);
-        this.googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-        this.googleMap.getUiSettings().setZoomControlsEnabled(true);
-
-        Polygon polygon1 = googleMap.addPolygon(new PolygonOptions()
-                .clickable(true)
-                .add(
-                        new LatLng(37.534491, 126.975930),
-                        new LatLng(37.529340, 126.974874),
-                        new LatLng(37.529349, 126.969751),
-                        new LatLng(37.526405, 126.969468),
-                        new LatLng(37.522454, 126.974521),
-                        new LatLng(37.520226, 126.989609),
-                        new LatLng(37.529851, 126.991286),
-                        new LatLng(37.535112, 126.986233),
-                        new LatLng(37.534569, 126.975796)));
-        // Store a data object with the polygon, used here to indicate an arbitrary type.
-        polygon1.setTag("용산공원");
-        polygon1.setFillColor(0x7fFF0000);
-        googleMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-            @Override
-            public void onPolygonClick(Polygon polygon) {
-                Toast.makeText(getBaseContext(), polygon.getTag().toString(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+    // TODO: onMapsReady 구현.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
