@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            onLocationChanged(locationResult.getLastLocation());
+            // TODO: 수신된 위치값 사용.
         }
     };
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         getLastLocation();
 
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+        // TODO: requestLocationUpdates
     }
 
     private void getLastLocation() {
@@ -85,28 +85,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Task<Location> result = LocationServices.getFusedLocationProviderClient(this).getLastLocation();
-        result.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                onLocationChanged(location);
-            }
-        });
+        // TODO: task에 listener 등록하여 처리.
     }
 
     @NonNull
     private LocationSettingsRequest getLocationSettingsRequest(LocationRequest locationRequest) {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(locationRequest);
-        return builder.build();
+        // TODO: LocationSettingsRequest 객체 생성
+        return null;
     }
 
     @NonNull
     private LocationRequest getLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(1000);
-        return locationRequest;
+        // TODO: LocationRequest 객체 생성.
+        return null;
     }
 
     @Override
@@ -126,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
+        // TODO: removeLocationUpdates
         super.onPause();
     }
 
