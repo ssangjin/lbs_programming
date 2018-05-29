@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -107,12 +110,38 @@ public class MainActivity extends AppCompatActivity {
 
                 table.addView(row);
             }
+
+            if (scanResultList.size() >= 8) {
+                double d1 = calculateDistance(scanResultList.get(5).level);
+                double d2 = calculateDistance(scanResultList.get(6).level);
+                double d3 = calculateDistance(scanResultList.get(7).level);
+
+                PointF currentPoint = calculatePosition(new Point(20, 20), new Point(10, 10), new Point(-10, -10), d1, d2, d3);
+                Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     private double calculateDistance(int rssi) {
-
         int txPower = -59; //hard coded power value. Usually ranges between -59 to -65
         return Math.pow(10, ((double)txPower - rssi) / (10 * 2));
+    }
+
+    private PointF calculatePosition(Point p1, Point p2, Point p3, double d1, double d2, double d3) {
+        double A = Math.pow(p1.x, 2) + Math.pow(p1.y, 2) - Math.pow(d1, 2);
+        double B = Math.pow(p2.x, 2) + Math.pow(p2.y, 2) - Math.pow(d2, 2);
+        double C = Math.pow(p3.x, 2) + Math.pow(p3.y, 2) - Math.pow(d3, 2);
+
+        double X32 = p3.x - p2.x;
+        double X13 = p1.x - p3.x;
+        double X21 = p2.x - p1.x;
+
+        double Y32 = p3.y - p2.y;
+        double Y13 = p1.y - p3.y;
+        double Y21 = p2.y - p1.y;
+
+        double x = (A * Y32 + B * Y13 + C * Y21) / ( 2 * (p1.x * Y32 + p2.x * Y13 + p3.x * Y21));
+        double y = (A * X32 + B * X13 + C * X21) / ( 2 * (p1.y * X32 + p2.y * X13 + p3.y * X21));
+        return new PointF((float)x, (float)y);
     }
 }
