@@ -1,12 +1,16 @@
 package com.lbs.programming.lbs_2_2;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
     private WifiManager wifiManager;
     private WifiScanReceiver wifiScanReceiver;
 
@@ -26,26 +31,45 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+        // TODO: WIFI Manger 객체 생성.
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            onScan(null);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        wifiScanReceiver = new WifiScanReceiver();
-        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
-        onScan(null);
+        // TODO: WIFI Scan receiver 생성 / 등록
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            onScan(null);
+        }
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(wifiScanReceiver);
+        // TODO: WIFI Scan receiver 해제
         super.onPause();
     }
 
     public void onScan(View view) {
-        wifiManager.startScan();
+        // TODO: WIFI SCAN
     }
 
     private class WifiScanReceiver extends BroadcastReceiver {
