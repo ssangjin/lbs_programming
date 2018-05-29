@@ -31,29 +31,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: WIFI Manger 객체 생성.
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-        }
-
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            onScan(null);
-        }
+        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        wifiScanReceiver = new WifiScanReceiver();
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
         // TODO: WIFI Scan receiver 생성 / 등록
 
@@ -64,12 +49,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        // TODO: WIFI Scan receiver 해제
+        unregisterReceiver(wifiScanReceiver);
         super.onPause();
     }
 
     public void onScan(View view) {
-        // TODO: WIFI SCAN
+        wifiManager.startScan();
     }
 
     private class WifiScanReceiver extends BroadcastReceiver {
@@ -80,9 +65,15 @@ public class MainActivity extends AppCompatActivity {
             table.removeAllViews();
 
             TableRow row = new TableRow(getBaseContext());
+
+            TextView textView = new TextView(getBaseContext());
+            textView.setText("Est distance  ");
+            textView.setBackgroundColor(Color.GRAY);
+            row.addView(textView);
+
             Field[] fields = ScanResult.class.getDeclaredFields();
             for (Field field : fields) {
-                TextView textView = new TextView(getBaseContext());
+                textView = new TextView(getBaseContext());
                 textView.setText("  "+ field.getName() + "  ");
                 textView.setBackgroundColor(Color.GRAY);
                 row.addView(textView);
@@ -93,8 +84,13 @@ public class MainActivity extends AppCompatActivity {
                 // create a new TableRow
                 row = new TableRow(getBaseContext());
 
+                double distance = calculateDistance(scanResult.level);
+                textView = new TextView(getBaseContext());
+                textView.setText(String.format("%.2f", distance));
+                row.addView(textView);
+
                 for (Field field : fields) {
-                    TextView textView = new TextView(getBaseContext());
+                    textView = new TextView(getBaseContext());
                     try {
                         Object value = field.get(scanResult);
 
@@ -112,5 +108,11 @@ public class MainActivity extends AppCompatActivity {
                 table.addView(row);
             }
         }
+    }
+
+    private double calculateDistance(int rssi) {
+
+        int txPower = -59; //hard coded power value. Usually ranges between -59 to -65
+        return Math.pow(10, ((double)txPower - rssi) / (10 * 2));
     }
 }
