@@ -39,25 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private ScanResultAdapter scanResultAdapter;
 
     // Device scan callback.
-    private ScanCallback scanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            super.onScanResult(callbackType, result);
-            scanResultAdapter.add(result);
-            listview.setAdapter(scanResultAdapter);
-        }
-
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            super.onBatchScanResults(results);
-            listview.setAdapter(new ScanResultAdapter(getBaseContext(), results));
-        }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            super.onScanFailed(errorCode);
-        }
-    };
+    // TODO: show ble devices.
+    private ScanCallback scanCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         // TODO: GET Bluetooth Adaptor.
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
+
+        // TODO: GET BLE Scanner
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
@@ -99,21 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scanLeDevice(final boolean scan) {
-        if (scan) {
-            scanResultAdapter.clear();
-
-            // Stops scanning after a pre-defined scan period.
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    bluetoothLeScanner.stopScan(scanCallback);
-                }
-            }, SCAN_PERIOD);
-
-            bluetoothLeScanner.startScan(scanCallback);
-        } else {
-            bluetoothLeScanner.stopScan(scanCallback);
-        }
+        // TODO: scan / stop ble devices.
 
     }
 
