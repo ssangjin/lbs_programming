@@ -34,14 +34,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+        // TODO: WIFI Manager 생성
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        wifiScanReceiver = new WifiScanReceiver();
-        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
         // TODO: WIFI Scan receiver 생성 / 등록
 
@@ -52,12 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        unregisterReceiver(wifiScanReceiver);
+        // TODO: WIFI Scan receiver 해제​
         super.onPause();
     }
 
     public void onScan(View view) {
-        wifiManager.startScan();
+        // TODO: WIFI Scan​
     }
 
     private class WifiScanReceiver extends BroadcastReceiver {
@@ -69,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
             TableRow row = new TableRow(getBaseContext());
 
+            // TODO : TableView에 컬럼 추가​
             TextView textView = new TextView(getBaseContext());
-            textView.setText("Est distance  ");
-            textView.setBackgroundColor(Color.GRAY);
-            row.addView(textView);
 
             Field[] fields = ScanResult.class.getDeclaredFields();
             for (Field field : fields) {
@@ -87,10 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 // create a new TableRow
                 row = new TableRow(getBaseContext());
 
-                double distance = calculateDistance(scanResult.level);
-                textView = new TextView(getBaseContext());
-                textView.setText(String.format("%.2f", distance));
-                row.addView(textView);
+                // TODO : Distance column에 값 추가​
 
                 for (Field field : fields) {
                     textView = new TextView(getBaseContext());
@@ -112,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (scanResultList.size() >= 8) {
+                // TODO: 원하는 AP를 찾아 아래의 index를 변경할 것.
                 double d1 = calculateDistance(scanResultList.get(5).level);
                 double d2 = calculateDistance(scanResultList.get(6).level);
                 double d3 = calculateDistance(scanResultList.get(7).level);
