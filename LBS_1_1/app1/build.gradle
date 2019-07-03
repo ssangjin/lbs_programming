@@ -27,5 +27,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     // TODO: import Play service location
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
 }

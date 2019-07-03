@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             // TODO: 수신된 위치값 사용.
-            onLocationChanged(locationResult.getLastLocation());
         }
     };
 
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         // TODO: requestLocationUpdates
-        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
 
     private void getLastLocation() {
@@ -89,30 +87,16 @@ public class MainActivity extends AppCompatActivity {
 
         Task<Location> result = LocationServices.getFusedLocationProviderClient(this).getLastLocation();
         // TODO: task에 listener 등록하여 처리.
-        result.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                onLocationChanged(location);
-            }
-        });
     }
 
     @NonNull
     private LocationSettingsRequest getLocationSettingsRequest(LocationRequest locationRequest) {
         // TODO: LocationSettingsRequest 객체 생성
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(locationRequest);
-        return builder.build();
     }
 
     @NonNull
     private LocationRequest getLocationRequest() {
         // TODO: LocationRequest 객체 생성.
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(1000);
-        return locationRequest;
     }
 
     @Override
@@ -133,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // TODO: removeLocationUpdates
-        LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
+
         super.onPause();
     }
 

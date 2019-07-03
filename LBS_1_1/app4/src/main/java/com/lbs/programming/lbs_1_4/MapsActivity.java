@@ -71,7 +71,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // TODO: getGeofencingClient
-        geofencingClient = LocationServices.getGeofencingClient(this);
 
         createGeofenceObject();
         GeofencingRequest geofencingRequest = getGeofencingRequest();
@@ -103,33 +102,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private PendingIntent getGeofencePendingIntent() {
         // todo: return GeofencePendingIntent
-        if (geofencePendingIntent != null) {
-            return geofencePendingIntent;
-        }
-
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
-        geofencePendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        return geofencePendingIntent;
     }
 
     private void createGeofenceObject() {
         // TODO: create Geofence Object
-        geofenceList.add(new Geofence.Builder()
-            .setRequestId("용산")
-            .setCircularRegion(
-                    37.528168, 126.981895,800)
-            .setExpirationDuration(30 * 60 * 1000)
-            .setTransitionTypes(
-                    Geofence.GEOFENCE_TRANSITION_ENTER |
-                            Geofence.GEOFENCE_TRANSITION_EXIT).build());
     }
 
     private GeofencingRequest getGeofencingRequest() {
         // TODO: get Geofencing Request
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.addGeofences(geofenceList);
-        return builder.build();
     }
 
     private void removeGeofence() {
