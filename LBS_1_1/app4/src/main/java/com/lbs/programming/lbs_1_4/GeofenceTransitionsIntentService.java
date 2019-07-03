@@ -9,11 +9,12 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
@@ -90,7 +91,16 @@ public class GeofenceTransitionsIntentService extends IntentService {
             List<Geofence> triggeringGeofences) {
 
         // TODO: list에서 값을 읽어온다.
-        return "";
+        String geofenceTransitionString = getTransitionString(geofenceTransition);
+
+        // Get the Ids of each geofence that was triggered.
+        ArrayList<String> triggeringGeofencesIdsList = new ArrayList<>();
+        for (Geofence geofence : triggeringGeofences) {
+            triggeringGeofencesIdsList.add(geofence.getRequestId());
+        }
+        String triggeringGeofencesIdsString = TextUtils.join(", ",  triggeringGeofencesIdsList);
+
+        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
     }
 
     /**
