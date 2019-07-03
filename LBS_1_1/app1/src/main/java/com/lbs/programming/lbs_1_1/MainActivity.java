@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         // TODO: LocationManager에서 초기 위치를 받음. getLastKnownLocation
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
         // TODO: onLocationChanged를 호출하여 화면 업데이트.
         onLocationChanged(location);
     }
@@ -86,14 +87,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     protected void onPause() {
-        super.onPause();
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
         // TODO: removeUpdates 호출
         locationManager.removeUpdates(this);
+        super.onPause();
+
     }
 
     @Override
@@ -111,8 +112,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    // onLocationChanged 구현. TextView에 값을 넣어줌.
-
+    // TODO: onLocationChanged 구현. TextView에 값을 넣어줌.
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
