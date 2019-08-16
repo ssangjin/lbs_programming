@@ -40,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
                 output.setText("");
                 break;
             case R.id.buttonHash:
-                output.setText(Integer.toString(input.getText().hashCode()));
+                // TODO: show hash code.
+                int hash = input.getText().hashCode();
+                output.setText(Integer.toString(hash));
                 break;
         }
     }
