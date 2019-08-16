@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        sensorManager.unregisterListener(sensorEventListener);
         super.onPause();
+        sensorManager.unregisterListener(sensorEventListener);
     }
 }
