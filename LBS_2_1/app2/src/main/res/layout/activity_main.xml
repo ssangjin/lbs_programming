@@ -26,13 +26,33 @@
         app:layout_constraintTop_toTopOf="@+id/textViewStep" />
 
     <TextView
+        android:id="@+id/textViewAccelerometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="ACCELEROMETER"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewX"
+        app:layout_constraintTop_toTopOf="@+id/textViewStep"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewRotationVector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="ROTATION_VECTOR"
+        app:layout_constraintLeft_toRightOf="@+id/textViewAccelerometer"
+        app:layout_constraintTop_toTopOf="@+id/textViewStep"
+        android:layout_marginTop="30dp" />
+
+    <TextView
         android:id="@+id/textViewX"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:text="X"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textViewStep"
+        app:layout_constraintTop_toTopOf="@+id/textViewAccelerometer"
         android:layout_marginTop="30dp" />
 
     <TextView
@@ -41,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:text="0"
-        app:layout_constraintStart_toEndOf="@+id/textViewX"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewAccelerometer"
         app:layout_constraintTop_toTopOf="@+id/textViewX" />
 
     <TextView
@@ -59,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:text="0"
-        app:layout_constraintStart_toEndOf="@+id/textViewY"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewAccelerometer"
         app:layout_constraintTop_toTopOf="@+id/textViewY" />
 
     <TextView
@@ -77,7 +97,7 @@
         android:layout_height="wrap_content"
         android:text="0"
         android:layout_marginStart="30dp"
-        app:layout_constraintStart_toEndOf="@+id/textViewZ"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewAccelerometer"
         app:layout_constraintTop_toTopOf="@+id/textViewZ" />
 
     <TextView
@@ -86,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:text="0"
-        app:layout_constraintStart_toEndOf="@+id/textViewValueX"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewRotationVector"
         app:layout_constraintTop_toTopOf="@+id/textViewX" />
 
     <TextView
@@ -95,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:text="0"
-        app:layout_constraintStart_toEndOf="@+id/textViewValueY"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewRotationVector"
         app:layout_constraintTop_toTopOf="@+id/textViewY" />
 
     <TextView
@@ -104,6 +124,6 @@
         android:layout_height="wrap_content"
         android:text="0"
         android:layout_marginStart="30dp"
-        app:layout_constraintStart_toEndOf="@+id/textViewValueZ"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewRotationVector"
         app:layout_constraintTop_toTopOf="@+id/textViewZ" />
 </android.support.constraint.ConstraintLayout>
