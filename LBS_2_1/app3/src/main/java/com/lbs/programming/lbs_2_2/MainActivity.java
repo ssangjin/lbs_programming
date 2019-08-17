@@ -23,6 +23,14 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
+import com.lemmingapex.trilateration.TrilaterationFunction;
+
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -89,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
             TableRow row = new TableRow(getBaseContext());
 
+            // TODO: TableView에 컬럼 추가
             TextView textView = new TextView(getBaseContext());
             textView.setText("Est distance  ");
             textView.setBackgroundColor(Color.GRAY);
@@ -107,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 // create a new TableRow
                 row = new TableRow(getBaseContext());
 
+                // TODO: Distance column에 값 추가
                 double distance = calculateDistance(scanResult.level);
                 textView = new TextView(getBaseContext());
                 textView.setText(String.format("    %.2f", distance));
@@ -137,16 +147,15 @@ public class MainActivity extends AppCompatActivity {
                 double d2 = 0;
                 double d3 = 0;
 
-                for (ScanResult scanResult: scanResultList) {
-                   if (scanResult.SSID.equals("sj")) {
-                       d1 = calculateDistance(scanResult.level);
-                   }
-                   else if (scanResult.SSID.equals("MK")) {
-                       d2 = calculateDistance(scanResult.level);
-                   }
-                   else if (scanResult.SSID.equals("iptime")) {
-                       d3 = calculateDistance(scanResult.level);
-                   }
+                for (ScanResult scanResult : scanResultList) {
+                    // TODO: AP 이름 변경
+                    if (scanResult.SSID.equals("sj")) {
+                        d1 = calculateDistance(scanResult.level);
+                    } else if (scanResult.SSID.equals("MK")) {
+                        d2 = calculateDistance(scanResult.level);
+                    } else if (scanResult.SSID.equals("iptime")) {
+                        d3 = calculateDistance(scanResult.level);
+                    }
                 }
 
                 PointF currentPoint = calculatePosition(
@@ -167,21 +176,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private PointF calculatePosition(Point p1, Point p2, Point p3, double d1, double d2, double d3) {
-        double A = Math.pow(p1.x, 2) + Math.pow(p1.y, 2) - Math.pow(d1, 2);
-        double B = Math.pow(p2.x, 2) + Math.pow(p2.y, 2) - Math.pow(d2, 2);
-        double C = Math.pow(p3.x, 2) + Math.pow(p3.y, 2) - Math.pow(d3, 2);
+        // TODO: 삼각측량 구현
+        double[][] positions = new double[][] { { p1.x, p1.y }, { p2.x, p2.y }, { p3.x, p3.y } };
+        double[] distances = new double[] { d1, d2, d3 };
 
-        double X32 = p3.x - p2.x;
-        double X13 = p1.x - p3.x;
-        double X21 = p2.x - p1.x;
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(
+                new TrilaterationFunction(positions, distances),
+                new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
 
-        double Y32 = p3.y - p2.y;
-        double Y13 = p1.y - p3.y;
-        double Y21 = p2.y - p1.y;
+        // the answer
+        double[] centroid = optimum.getPoint().toArray();
 
-        double x = (A * Y32 + B * Y13 + C * Y21) / ( 2 * (p1.x * Y32 + p2.x * Y13 + p3.x * Y21));
-        double y = (A * X32 + B * X13 + C * X21) / ( 2 * (p1.y * X32 + p2.y * X13 + p3.y * X21));
-        return new PointF((float)x, (float)y);
+        return new PointF((float)centroid[0], (float)centroid[1]);
     }
 
     @Override
