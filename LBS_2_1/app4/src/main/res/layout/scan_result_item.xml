@@ -4,17 +4,22 @@
     android:layout_height="match_parent" >
     <TextView
         android:id="@+id/name"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ssid" />
     <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="distance" />
+    <TextView
         android:id="@+id/address"
-        android:layout_width="120dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="address" />
     <TextView
         android:id="@+id/level"
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="address" />
+        android:text="level" />
 </LinearLayout>

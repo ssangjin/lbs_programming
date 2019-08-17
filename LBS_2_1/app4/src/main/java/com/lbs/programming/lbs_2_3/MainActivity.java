@@ -8,11 +8,14 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
+import com.lemmingapex.trilateration.TrilaterationFunction;
+
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -124,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class ScanResultAdapter extends ArrayAdapter<ScanResult> {
+        double d1 = Double.MAX_VALUE;
+        double d2 = Double.MAX_VALUE;
+        double d3 = Double.MAX_VALUE;
 
         List<ScanResult> scanResultArrayList = new ArrayList<>();
 
@@ -153,6 +165,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             scanResultArrayList.add(object);
+
+            Log.e("ScanResult", object.toString());
+
+            // TODO: AP 이름 변경
+            if (object != null && object.getDevice() != null && object.getDevice().getAddress() != null) {
+                if (object.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
+                    d1 = calculateDistance(object.getRssi());
+                } else if (object.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
+                    d2 = calculateDistance(object.getRssi());
+                } else if (object.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
+                    d3 = calculateDistance(object.getRssi());
+                }
+
+                if (d1 < 1000 && d2 < 1000 && d3 < 1000) {
+                    PointF currentPoint = calculatePosition(
+                            new Point(20, 20),
+                            new Point(10, -10),
+                            new Point(-20, 0), d1, d2, d3);
+                    Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
+                    Log.e("ScanResultPoint", "x:" + currentPoint.x + ", y:" + currentPoint.y);
+                }
+            }
         }
 
         @NonNull
@@ -167,13 +201,36 @@ public class MainActivity extends AppCompatActivity {
             TextView name = (TextView) convertView.findViewById(R.id.name);
             TextView address = (TextView) convertView.findViewById(R.id.address);
             TextView level = (TextView) convertView.findViewById(R.id.level);
+            TextView distance = (TextView) convertView.findViewById(R.id.distance);
 
-            name.setText(scanResult.getDevice().getName());
-            address.setText(scanResult.getDevice().getAddress());
-            level.setText(Integer.toString(scanResult.getRssi()));
+            name.setText(scanResult.getDevice().getName() + "   |");
+            distance.setText(Double.toString(calculateDistance(scanResult.getRssi())) + "   |");
+            address.setText(scanResult.getDevice().getAddress() + "   |");
+            level.setText(Integer.toString(scanResult.getRssi()) + "  |");
 
             return convertView;
         }
+    }
+
+    private double calculateDistance(int rssi) {
+        int txPower = -50; //hard coded power value. Usually ranges between -59 to -65
+        return Math.pow(10, ((double)txPower - rssi) / (10 * 2));
+    }
+
+    private PointF calculatePosition(Point p1, Point p2, Point p3, double d1, double d2, double d3) {
+        // TODO: 삼각측량 구현
+        double[][] positions = new double[][] { { p1.x, p1.y }, { p2.x, p2.y }, { p3.x, p3.y } };
+        double[] distances = new double[] { d1, d2, d3 };
+
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(
+                new TrilaterationFunction(positions, distances),
+                new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+
+        // the answer
+        double[] centroid = optimum.getPoint().toArray();
+
+        return new PointF((float)centroid[0], (float)centroid[1]);
     }
 
 }
