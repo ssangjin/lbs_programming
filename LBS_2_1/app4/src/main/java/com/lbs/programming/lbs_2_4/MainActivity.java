@@ -1,5 +1,6 @@
 package com.lbs.programming.lbs_2_4;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -13,6 +14,8 @@ import android.graphics.PointF;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
 
     private static final int REQUEST_ENABLE_BT = 23;
 
@@ -78,6 +82,12 @@ public class MainActivity extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.listview);
         scanResultAdapter = new ScanResultAdapter(getBaseContext(), new ArrayList<ScanResult>());
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+
         // TODO: Bluetooth 지원확인
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
@@ -101,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
         }
-
         scanLeDevice(true);
     }
 

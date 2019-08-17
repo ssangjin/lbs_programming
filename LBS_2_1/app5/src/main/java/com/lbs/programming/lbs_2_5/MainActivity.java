@@ -1,20 +1,28 @@
 package com.lbs.programming.lbs_2_5;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,11 +43,15 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
 
     private static final int REQUEST_ENABLE_BT = 23;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
+
+    private WifiManager wifiManager;
+    private WifiScanReceiver wifiScanReceiver;
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
@@ -48,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private ScanResultAdapter scanResultAdapter;
 
     // Device scan callback.
-    // TODO: SCAN RESULT를 scanResultAdapater에 넣어준다.
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -74,11 +85,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+
+        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+
         handler = new Handler();
         listview = (ListView) findViewById(R.id.listview);
         scanResultAdapter = new ScanResultAdapter(getBaseContext(), new ArrayList<ScanResult>());
 
-        // TODO: Bluetooth 지원확인
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
         if (!getPackageManager().
@@ -87,15 +105,12 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        // TODO: GET Bluetooth Adaptor.
         BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
-        // TODO: Get BLE Scanner.
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
-        // TODO: Enable Bluetooth.
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -103,6 +118,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         scanLeDevice(true);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // TODO: WIFI Scan receiver 생성 / 등록
+        wifiScanReceiver = new WifiScanReceiver();
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            onScan(null);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(wifiScanReceiver);
+        super.onPause();
     }
 
     @Override
@@ -115,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scanLeDevice(final boolean scan) {
-        // TODO: Scan bluetooth
         if (scan) {
             scanResultAdapter.clear();
 
@@ -135,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onScan(View view) {
+        wifiManager.startScan();
         scanLeDevice(true);
     }
 
@@ -174,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
 
             Log.e("ScanResult", object.toString());
 
-            // TODO: Bluetooth Address 변경
             if (object != null && object.getDevice() != null && object.getDevice().getAddress() != null) {
                 if (object.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
                     d1 = calculateDistance(object.getRssi());
@@ -218,13 +252,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private class WifiScanReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            List<android.net.wifi.ScanResult> scanResultList = wifiManager.getScanResults();
+
+            if (scanResultList.size() >= 8) {
+
+                double d1 = 0;
+                double d2 = 0;
+                double d3 = 0;
+
+                for (android.net.wifi.ScanResult scanResult : scanResultList) {
+                    // TODO: AP 이름 변경
+                    if (scanResult.SSID.equals("sj")) {
+                        d1 = calculateDistance(scanResult.level);
+                    } else if (scanResult.SSID.equals("MK")) {
+                        d2 = calculateDistance(scanResult.level);
+                    } else if (scanResult.SSID.equals("iptime")) {
+                        d3 = calculateDistance(scanResult.level);
+                    }
+                }
+
+                PointF currentPoint = calculatePosition(
+                        new Point(20, 20),
+                        new Point(10, -10),
+                        new Point(-20, 0), d1, d2, d3);
+                Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     private double calculateDistance(int rssi) {
         int txPower = -50; //hard coded power value. Usually ranges between -59 to -65
         return Math.pow(10, ((double)txPower - rssi) / (10 * 2));
     }
 
     private PointF calculatePosition(Point p1, Point p2, Point p3, double d1, double d2, double d3) {
-        // TODO: 삼각측량 구현
         double[][] positions = new double[][] { { p1.x, p1.y }, { p2.x, p2.y }, { p3.x, p3.y } };
         double[] distances = new double[] { d1, d2, d3 };
 
@@ -238,5 +302,4 @@ public class MainActivity extends AppCompatActivity {
 
         return new PointF((float)centroid[0], (float)centroid[1]);
     }
-
 }
