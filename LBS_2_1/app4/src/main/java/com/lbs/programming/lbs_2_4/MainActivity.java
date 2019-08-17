@@ -1,4 +1,4 @@
-package com.lbs.programming.lbs_2_3;
+package com.lbs.programming.lbs_2_4;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ScanResultAdapter scanResultAdapter;
 
     // Device scan callback.
+    // TODO: SCAN RESULT를 scanResultAdapater에 넣어준다.
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.listview);
         scanResultAdapter = new ScanResultAdapter(getBaseContext(), new ArrayList<ScanResult>());
 
+        // TODO: Bluetooth 지원확인
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
         if (!getPackageManager().
@@ -89,8 +91,11 @@ public class MainActivity extends AppCompatActivity {
         BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
+
+        // TODO: Get BLE Scanner.
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
+        // TODO: Enable Bluetooth.
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scanLeDevice(final boolean scan) {
+        // TODO: Scan bluetooth
         if (scan) {
             scanResultAdapter.clear();
 
@@ -168,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.e("ScanResult", object.toString());
 
-            // TODO: AP 이름 변경
+            // TODO: Bluetooth Address 변경
             if (object != null && object.getDevice() != null && object.getDevice().getAddress() != null) {
                 if (object.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
                     d1 = calculateDistance(object.getRssi());

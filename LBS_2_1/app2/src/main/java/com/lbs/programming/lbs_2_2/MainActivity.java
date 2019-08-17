@@ -1,4 +1,4 @@
-package com.lbs.programming.lbs_2_1;
+package com.lbs.programming.lbs_2_2;
 
 import android.content.Context;
 import android.hardware.Sensor;

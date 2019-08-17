@@ -1,4 +1,4 @@
-package com.lbs.programming.lbs_2_2;
+package com.lbs.programming.lbs_2_3;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -28,8 +28,6 @@ import com.lemmingapex.trilateration.TrilaterationFunction;
 
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
 
 import java.lang.reflect.Field;
 import java.util.List;
