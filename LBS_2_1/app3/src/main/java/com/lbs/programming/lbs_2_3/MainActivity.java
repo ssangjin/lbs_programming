@@ -199,5 +199,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
+            onScan(null);
+        }
     }
 }

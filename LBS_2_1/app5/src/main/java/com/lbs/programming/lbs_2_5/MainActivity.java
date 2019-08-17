@@ -144,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_ENABLE_BT) {
-            scanLeDevice(true);
+        if (requestCode == REQUEST_ENABLE_BT || requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
+            onScan(null);
         }
     }
 
