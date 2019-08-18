@@ -29,6 +29,7 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: 메뉴 출력
         setTitle("실내 음식점에 입장하신것을 환영합니다.");
 
         ArrayList<String> list = new ArrayList<>();

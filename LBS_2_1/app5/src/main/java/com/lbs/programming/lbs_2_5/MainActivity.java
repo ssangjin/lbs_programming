@@ -79,23 +79,24 @@ public class MainActivity extends AppCompatActivity {
     private CustomGeofence geofence;
 
     private void calculateBleScanResult(ScanResult result) {
+        // TODO: mac address 및 좌표를 변경한다.
         Log.e("ScanResultBLE", result.toString());
 
         double distance = Double.MAX_VALUE;
         if (result != null && result.getDevice() != null && result.getDevice().getAddress() != null) {
             if (result.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
-                // Geofence에 위치 업데이트
+                // TODO: Geofence에 위치 업데이트
                 if (calculateDistance(result.getRssi()) < 5) {
                     geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 10, 20, 10);
                 }
             } else if (result.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
+                // TODO: Geofence에 위치 업데이트
                 if (calculateDistance(result.getRssi()) < 5) {
-                    // Geofence에 위치 업데이트
                     geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 9, 10, 10);
                 }
             } else if (result.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
+                // TODO: Geofence에 위치 업데이트
                 if (calculateDistance(result.getRssi()) < 5) {
-                    // Geofence에 위치 업데이트
                     geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 40, 50, 10);
                 }
             }
@@ -117,15 +118,18 @@ public class MainActivity extends AppCompatActivity {
 
         handler = new Handler();
 
+        // TODO: Geofence 설정
         geofence = new CustomGeofence(new CustomGeofence.OnGeofenceTransition() {
             @Override
             public void onTransition(CustomGeofence.Status geofenceTransition) {
                 if (geofenceTransition == CustomGeofence.Status.Enter) {
+                    // TODO: Menu 표출
                     Toast.makeText(getBaseContext(), "Entering", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     startActivity(intent);
 
                 } else if (geofenceTransition == CustomGeofence.Status.Exit) {
+                    // TODO: 설문조사 표출
                     Toast.makeText(getBaseContext(), "Exiting", Toast.LENGTH_LONG).show();
 
                     Intent i_survey = new Intent(MainActivity.this, SurveyActivity.class);
@@ -135,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: Geofence 설정
         geofence.addFence(14, 15, 10);
 
         // Use this check to determine whether BLE is supported on the device. Then
@@ -267,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
                         new Point(-20, 0), d1, d2, d3);
                 Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
 
-                // Geofence에 위치 업데이트
+                // TODO: Geofence에 위치 업데이트
                 geofence.onLocationChanged(CustomGeofence.PROVIDER_WIFI, currentPoint.x, currentPoint.y, 10);
             }
         }
