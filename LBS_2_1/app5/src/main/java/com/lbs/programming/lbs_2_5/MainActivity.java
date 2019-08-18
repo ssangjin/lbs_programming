@@ -17,19 +17,12 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
@@ -38,8 +31,6 @@ import com.lemmingapex.trilateration.TrilaterationFunction;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,22 +47,22 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
     private Handler handler;
-    private ListView listview;
-    private ScanResultAdapter scanResultAdapter;
 
     // Device scan callback.
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            scanResultAdapter.add(result);
-            listview.setAdapter(scanResultAdapter);
+            calculateBleScanResult(result);
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
-            listview.setAdapter(new ScanResultAdapter(getBaseContext(), results));
+
+            for (ScanResult scanResult : results) {
+                calculateBleScanResult(scanResult);
+            }
         }
 
         @Override
@@ -79,6 +70,26 @@ public class MainActivity extends AppCompatActivity {
             super.onScanFailed(errorCode);
         }
     };
+
+    private CustomGeofence geofence;
+
+    private void calculateBleScanResult(ScanResult result) {
+        Log.e("ScanResultBLE", result.toString());
+
+        double distance = Double.MAX_VALUE;
+        if (result != null && result.getDevice() != null && result.getDevice().getAddress() != null) {
+            if (result.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
+                // Geofence에 위치 업데이트
+                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 10, 20, 10);
+            } else if (result.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
+                // Geofence에 위치 업데이트
+                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,20, 30, 10);
+            } else if (result.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
+                // Geofence에 위치 업데이트
+                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,40, 50, 10);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +105,19 @@ public class MainActivity extends AppCompatActivity {
         wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
 
         handler = new Handler();
-        listview = (ListView) findViewById(R.id.listview);
-        scanResultAdapter = new ScanResultAdapter(getBaseContext(), new ArrayList<ScanResult>());
+
+        geofence = new CustomGeofence(new CustomGeofence.OnGeofenceTransition() {
+            @Override
+            public void onTransition(CustomGeofence.Status geofenceTransition) {
+                if (geofenceTransition == CustomGeofence.Status.Enter) {
+                    Toast.makeText(getBaseContext(), "Entering", Toast.LENGTH_LONG).show();
+                } else if (geofenceTransition == CustomGeofence.Status.Exit) {
+                    Toast.makeText(getBaseContext(), "Exiting", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        geofence.addFence(9, 15, 10);
 
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
@@ -151,8 +173,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void scanLeDevice(final boolean scan) {
         if (scan) {
-            scanResultAdapter.clear();
-
             // Stops scanning after a pre-defined scan period.
             handler.postDelayed(new Runnable() {
                 @Override
@@ -173,85 +193,6 @@ public class MainActivity extends AppCompatActivity {
         scanLeDevice(true);
     }
 
-    private class ScanResultAdapter extends ArrayAdapter<ScanResult> {
-        double d1 = Double.MAX_VALUE;
-        double d2 = Double.MAX_VALUE;
-        double d3 = Double.MAX_VALUE;
-
-        List<ScanResult> scanResultArrayList = new ArrayList<>();
-
-        public ScanResultAdapter(Context context, List<ScanResult> scanResults) {
-            super(context, R.layout.scan_result_item, scanResults);
-            scanResultArrayList = scanResults;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public int getCount() {
-            return scanResultArrayList.size();
-        }
-
-        @Override
-        public void add(@Nullable ScanResult object) {
-            super.add(object);
-            Iterator<ScanResult> iterator = scanResultArrayList.iterator();
-            while (iterator.hasNext()) {
-                ScanResult scanResult = iterator.next();
-                if (scanResult.getDevice().getAddress().equals(object.getDevice().getAddress())) {
-                    iterator.remove();
-                }
-            }
-            scanResultArrayList.add(object);
-
-            Log.e("ScanResult", object.toString());
-
-            if (object != null && object.getDevice() != null && object.getDevice().getAddress() != null) {
-                if (object.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
-                    d1 = calculateDistance(object.getRssi());
-                } else if (object.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
-                    d2 = calculateDistance(object.getRssi());
-                } else if (object.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
-                    d3 = calculateDistance(object.getRssi());
-                }
-
-                if (d1 < 1000 && d2 < 1000 && d3 < 1000) {
-                    PointF currentPoint = calculatePosition(
-                            new Point(20, 20),
-                            new Point(10, -10),
-                            new Point(-20, 0), d1, d2, d3);
-                    Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
-                    Log.e("ScanResultPoint", "x:" + currentPoint.x + ", y:" + currentPoint.y);
-                }
-            }
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            ScanResult scanResult = getItem(position);
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.scan_result_item, parent, false);
-            }
-
-            // Lookup view for data population
-            TextView name = (TextView) convertView.findViewById(R.id.name);
-            TextView address = (TextView) convertView.findViewById(R.id.address);
-            TextView level = (TextView) convertView.findViewById(R.id.level);
-            TextView distance = (TextView) convertView.findViewById(R.id.distance);
-
-            name.setText(scanResult.getDevice().getName() + "   |");
-            distance.setText(Double.toString(calculateDistance(scanResult.getRssi())) + "   |");
-            address.setText(scanResult.getDevice().getAddress() + "   |");
-            level.setText(Integer.toString(scanResult.getRssi()) + "  |");
-
-            return convertView;
-        }
-    }
-
     private class WifiScanReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -264,12 +205,13 @@ public class MainActivity extends AppCompatActivity {
                 double d3 = 0;
 
                 for (android.net.wifi.ScanResult scanResult : scanResultList) {
+                    Log.e("ScanResultWIFI", scanResult.toString());
                     // TODO: AP 이름 변경
                     if (scanResult.SSID.equals("sj")) {
                         d1 = calculateDistance(scanResult.level);
-                    } else if (scanResult.SSID.equals("MK")) {
+                    } else if (scanResult.SSID.equals("iptime-SoJu")) {
                         d2 = calculateDistance(scanResult.level);
-                    } else if (scanResult.SSID.equals("iptime")) {
+                    } else if (scanResult.SSID.equals("MK")) {
                         d3 = calculateDistance(scanResult.level);
                     }
                 }
@@ -279,6 +221,9 @@ public class MainActivity extends AppCompatActivity {
                         new Point(10, -10),
                         new Point(-20, 0), d1, d2, d3);
                 Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
+
+                // Geofence에 위치 업데이트
+                geofence.onLocationChanged(CustomGeofence.PROVIDER_WIFI, currentPoint.x, currentPoint.y, 10);
             }
         }
     }
