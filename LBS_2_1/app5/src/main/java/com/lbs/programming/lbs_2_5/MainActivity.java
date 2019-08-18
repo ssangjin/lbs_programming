@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 10, 20, 10);
             } else if (result.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
                 // Geofence에 위치 업데이트
-                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,20, 30, 10);
+                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,9, 10, 10);
             } else if (result.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
                 // Geofence에 위치 업데이트
                 geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,40, 50, 10);
@@ -111,13 +111,16 @@ public class MainActivity extends AppCompatActivity {
             public void onTransition(CustomGeofence.Status geofenceTransition) {
                 if (geofenceTransition == CustomGeofence.Status.Enter) {
                     Toast.makeText(getBaseContext(), "Entering", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                    startActivity(intent);
+
                 } else if (geofenceTransition == CustomGeofence.Status.Exit) {
                     Toast.makeText(getBaseContext(), "Exiting", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
-        geofence.addFence(9, 15, 10);
+        geofence.addFence(14, 15, 10);
 
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.

@@ -103,7 +103,7 @@ public class CustomGeofence {
         public boolean equals(Object obj) {
             if (obj instanceof Fence) {
                 double distance = Math.pow((this.x - ((Fence) obj).x) * (this.x - ((Fence) obj).x) + (this.y - ((Fence) obj).y) * (this.y - ((Fence) obj).y), 0.5);
-                if (distance < (this.diameter + ((Fence) obj).diameter)) {
+                if (distance < (this.diameter + ((Fence) obj).diameter) / 2) {
                     return true;
                 } else {
                     return false;

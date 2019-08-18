@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LBS_2_5</string>
+    <string name="title_activity_menu">MenuActivity</string>
 </resources>
