@@ -25,18 +25,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.androidadvance.androidsurvey.SurveyActivity;
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
 
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
 
     private static final int REQUEST_ENABLE_BT = 23;
+
+    private static final int SURVEY_REQUEST = 1337;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
@@ -80,13 +85,19 @@ public class MainActivity extends AppCompatActivity {
         if (result != null && result.getDevice() != null && result.getDevice().getAddress() != null) {
             if (result.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
                 // Geofence에 위치 업데이트
-                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 10, 20, 10);
+                if (calculateDistance(result.getRssi()) < 5) {
+                    geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 10, 20, 10);
+                }
             } else if (result.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
-                // Geofence에 위치 업데이트
-                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,9, 10, 10);
+                if (calculateDistance(result.getRssi()) < 5) {
+                    // Geofence에 위치 업데이트
+                    geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 9, 10, 10);
+                }
             } else if (result.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
-                // Geofence에 위치 업데이트
-                geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE,40, 50, 10);
+                if (calculateDistance(result.getRssi()) < 5) {
+                    // Geofence에 위치 업데이트
+                    geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 40, 50, 10);
+                }
             }
         }
     }
@@ -116,6 +127,10 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (geofenceTransition == CustomGeofence.Status.Exit) {
                     Toast.makeText(getBaseContext(), "Exiting", Toast.LENGTH_LONG).show();
+
+                    Intent i_survey = new Intent(MainActivity.this, SurveyActivity.class);
+                    i_survey.putExtra("json_survey", loadSurveyJson("survey.json"));
+                    startActivityForResult(i_survey, SURVEY_REQUEST);
                 }
             }
         });
@@ -145,6 +160,22 @@ public class MainActivity extends AppCompatActivity {
         scanLeDevice(true);
     }
 
+    //json stored in the assets folder. but you can get it from wherever you like.
+    private String loadSurveyJson(String filename) {
+        try {
+            InputStream is = getAssets().open(filename);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            return new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onResume() {
@@ -171,7 +202,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_ENABLE_BT || requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
             onScan(null);
+        } else if (requestCode == SURVEY_REQUEST) {
+            if (resultCode == RESULT_OK) {
+
+                String answers_json = data.getExtras().getString("answers");
+                Log.d("****", "****************** WE HAVE ANSWERS ******************");
+                Log.v("ANSWERS JSON", answers_json);
+                Log.d("****", "*****************************************************");
+
+                //do whatever you want with them...
+            }
         }
+
     }
 
     private void scanLeDevice(final boolean scan) {
