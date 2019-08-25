@@ -57,14 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private List<BusStation> busStationList = new ArrayList<>();
 
-    private LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            onLocationChanged(locationResult.getLastLocation());
-        }
-    };
-    private Location lastLocation;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,12 +66,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // TODO: add permissions.
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
         } else {
+            // TODO: add location request.
             startLocationService();
         }
     }
@@ -98,6 +92,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationService();
+        }
+    }
+
+    private LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            onLocationChanged(locationResult.getLastLocation());
+        }
+    };
+    private Location lastLocation;
+
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            if (lastLocation == null || location.distanceTo(lastLocation) > 1000) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                lastLocation = location;
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mMap != null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mMap.clear();
+                                }
+                            });
+                        }
+
+                        // requestBusStation();
+                        requestBusStationInSeoul();
+                    }
+                });
+                thread.start();
+            }
         }
     }
 
@@ -187,28 +217,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public void onLocationChanged(Location location) {
-        if (location != null) {
-            if (lastLocation == null || location.distanceTo(lastLocation) > 1000) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                lastLocation = location;
-
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mMap.clear();
-
-                        // requestBusStation();
-                        requestBusStationInSeoul();
-                    }
-                });
-                thread.start();
-            }
-        }
-    }
-
     private void requestBusStationInSeoul() {
+        // TODO: 현위치로 주변 정류장 요청
         URL url = null;
         HttpURLConnection urlConnection = null;
         try {
@@ -282,6 +292,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void updateMarkers() {
+        // 화면에 마커 표출
         for (BusStation busStation : busStationList) {
             MarkerOptions marker = new MarkerOptions()
                     .position(new LatLng(busStation.getLatitude(), busStation.getLongitude()))
@@ -292,7 +303,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void parseBusStationList(InputStream xmlString) {
-        busStationList.clear();
+        // TODO: 응답값 분석
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
