@@ -57,14 +57,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            scanResultAdapter.add(result);
-            listview.setAdapter(scanResultAdapter);
+            // TODO: scan result 표출
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
-            listview.setAdapter(new ScanResultAdapter(getBaseContext(), results));
+
+            // TODO: scan result 표출
         }
 
         @Override
@@ -89,28 +89,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // TODO: Bluetooth 지원확인
-        // Use this check to determine whether BLE is supported on the device. Then
-        // you can selectively disable BLE-related features.
-        if (!getPackageManager().
-                hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, "BLE is not supported.", Toast.LENGTH_SHORT).show();
-            finish();
-        }
 
         // TODO: GET Bluetooth Adaptor.
-        BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
 
         // TODO: Get BLE Scanner.
-        bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
 
         // TODO: Enable Bluetooth.
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            return;
-        }
+
+
         scanLeDevice(true);
     }
 
@@ -132,15 +118,14 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    bluetoothLeScanner.stopScan(scanCallback);
+                    // TODO: scan 중단
                 }
             }, SCAN_PERIOD);
 
-            bluetoothLeScanner.startScan(scanCallback);
+            // TODO: scan 시작
         } else {
-            bluetoothLeScanner.stopScan(scanCallback);
+            // TODO: scan 중단
         }
-
     }
 
     public void onScan(View view) {
@@ -183,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.e("ScanResult", object.toString());
 
+            // TODO: Scan Result 계산
             // TODO: Bluetooth Address 변경
             if (object != null && object.getDevice() != null && object.getDevice().getAddress() != null) {
                 if (object.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
@@ -193,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     d3 = calculateDistance(object.getRssi());
                 }
 
+                // TODO: 좌표 변경
                 if (d1 < 1000 && d2 < 1000 && d3 < 1000) {
                     PointF currentPoint = calculatePosition(
                             new Point(20, 20),
