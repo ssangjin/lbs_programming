@@ -68,13 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // TODO: add permissions.
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
         } else {
             // TODO: add location request.
-            startLocationService();
         }
     }
 
@@ -91,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            startLocationService();
+            // TODO: 위치 서비스 시작
         }
     }
 
@@ -225,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             StringBuffer sb = new StringBuffer();
             sb.append("http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?");
             sb.append("serviceKey=");
-            sb.append("P7vj%2B%2FvV5UhtGKHkQldZU%2BrP5hdXIhGsPzz4ujuTdXMY5wzbN6DkQuU5fSos15SpHROJjAZz8M8gQZyhgBJzsA%3D%3D");
+            // TODO: service key 추가
             sb.append("&tmY=");
             sb.append(lastLocation.getLatitude());
             sb.append("&tmX=");
@@ -292,74 +287,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void updateMarkers() {
-        // 화면에 마커 표출
-        for (BusStation busStation : busStationList) {
-            MarkerOptions marker = new MarkerOptions()
-                    .position(new LatLng(busStation.getLatitude(), busStation.getLongitude()))
-                    .title(busStation.name)
-                    .snippet(busStation.getNodeId());
-            mMap.addMarker(marker);
-        }
+        // TODO: 화면에 마커 표출
     }
 
     private void parseBusStationList(InputStream xmlString) {
         // TODO: 응답값 분석
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(xmlString);
-            doc.getDocumentElement().normalize();
-            NodeList nodeList = doc.getDocumentElement().getElementsByTagName("item");
-            if (nodeList == null || nodeList.getLength() == 0) {
-                nodeList = doc.getDocumentElement().getElementsByTagName("itemList");
-            }
-            if (nodeList != null && nodeList.getLength() > 0) {
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    Node node = nodeList.item(i);
-                    NodeList stationInfo = node.getChildNodes();
-                    BusStation busStation = new BusStation();
-
-                    for (int j = 0; j < stationInfo.getLength(); j++) {
-                        Node item = stationInfo.item(j);
-                        switch (item.getNodeName()) {
-                            case "citycode":
-                                busStation.setCityCode(Integer.parseInt(item.getFirstChild().getNodeValue()));
-                                break;
-                            case "gpslati":
-                            case "gpsY":
-                                busStation.setLatitude(Double.parseDouble(item.getFirstChild().getNodeValue()));
-                                break;
-                            case "gpslong":
-                            case "gpsX":
-                                busStation.setLongitude(Double.parseDouble(item.getFirstChild().getNodeValue()));
-                                break;
-                            case "nodeid":
-                            case "stationId":
-                                busStation.setNodeId(item.getFirstChild().getNodeValue());
-                                break;
-                            case "nodenm":
-                            case "stationNm":
-                                busStation.setName(item.getFirstChild().getNodeValue());
-                                break;
-                        }
-                    }
-
-                    if (nodeList.item(0).getNodeName().equals("item")) {
-                        busStation.setLatitude(busStation.getLatitude() - 0.0026);
-                        busStation.setLongitude(busStation.getLongitude() - 0.000745);
-                    }
-
-                    Log.d("Result", i + ": " + busStation.toString());
-                    busStationList.add(busStation);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
     }
 
     static class BusStation {
