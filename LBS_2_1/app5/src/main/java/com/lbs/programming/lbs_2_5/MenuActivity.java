@@ -30,23 +30,6 @@ public class MenuActivity extends AppCompatActivity {
         });
 
         // TODO: 메뉴 출력
-        setTitle("실내 음식점에 입장하신것을 환영합니다.");
-
-        ArrayList<String> list = new ArrayList<>();
-        list.add("App 사용 쿠폰 : 3000원");
-        list.add("순메밀 회냉면 : 9000원");
-        list.add("치즈 가락 떡볶이 : 8900원");
-        list.add("2인세트 : 17500원");
-        list.add("3인 세트 : 29000원");
-
-
-        if (list != null)
-        {
-            ListView mListView = (ListView) findViewById(R.id.listView);
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, list);
-            mListView.setAdapter(adapter);
-        }
-
     }
 
 }

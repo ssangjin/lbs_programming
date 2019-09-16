@@ -87,17 +87,14 @@ public class MainActivity extends AppCompatActivity {
             if (result.getDevice().getAddress().equals("51:FC:61:90:E8:2C")) {
                 // TODO: Geofence에 위치 업데이트
                 if (calculateDistance(result.getRssi()) < 5) {
-                    geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 10, 20, 10);
                 }
             } else if (result.getDevice().getAddress().equals("70:8C:32:EE:93:AB")) {
                 // TODO: Geofence에 위치 업데이트
                 if (calculateDistance(result.getRssi()) < 5) {
-                    geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 9, 10, 10);
                 }
             } else if (result.getDevice().getAddress().equals("D8:D0:87:03:EA:81")) {
                 // TODO: Geofence에 위치 업데이트
                 if (calculateDistance(result.getRssi()) < 5) {
-                    geofence.onLocationChanged(CustomGeofence.PROVIDER_BLE, 40, 50, 10);
                 }
             }
         }
@@ -125,22 +122,15 @@ public class MainActivity extends AppCompatActivity {
                 if (geofenceTransition == CustomGeofence.Status.Enter) {
                     // TODO: Menu 표출
                     Toast.makeText(getBaseContext(), "Entering", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                    startActivity(intent);
-
                 } else if (geofenceTransition == CustomGeofence.Status.Exit) {
                     // TODO: 설문조사 표출
                     Toast.makeText(getBaseContext(), "Exiting", Toast.LENGTH_LONG).show();
-
-                    Intent i_survey = new Intent(MainActivity.this, SurveyActivity.class);
-                    i_survey.putExtra("json_survey", loadSurveyJson("survey.json"));
-                    startActivityForResult(i_survey, SURVEY_REQUEST);
                 }
             }
         });
 
         // TODO: Geofence 설정
-        geofence.addFence(14, 15, 10);
+
 
         // Use this check to determine whether BLE is supported on the device. Then
         // you can selectively disable BLE-related features.
@@ -273,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), currentPoint.toString(), Toast.LENGTH_LONG).show();
 
                 // TODO: Geofence에 위치 업데이트
-                geofence.onLocationChanged(CustomGeofence.PROVIDER_WIFI, currentPoint.x, currentPoint.y, 10);
             }
         }
     }
