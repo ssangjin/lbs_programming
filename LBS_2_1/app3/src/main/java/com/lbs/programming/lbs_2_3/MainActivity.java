@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+        // TODO: WIFI manager 생성
 
         handler = new Handler();
         // listview = (ListView) findViewById(R.id.listview);
@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // TODO: WIFI Scan receiver 생성 / 등록
-        wifiScanReceiver = new WifiScanReceiver();
-        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             onScan(null);
@@ -84,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        unregisterReceiver(wifiScanReceiver);
+        // TODO: WIFI Scan receiver 해제
         super.onPause();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onScan(View view) {
-        wifiManager.startScan();
+        // TODO: WIFI Scan
     }
 
     private class WifiScanReceiver extends BroadcastReceiver {
@@ -104,9 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
             // TODO: TableView에 컬럼 추가
             TextView textView = new TextView(getBaseContext());
-            textView.setText("Est distance  ");
-            textView.setBackgroundColor(Color.GRAY);
-            row.addView(textView);
 
             Field[] fields = ScanResult.class.getDeclaredFields();
             for (Field field : fields) {
@@ -122,10 +117,6 @@ public class MainActivity extends AppCompatActivity {
                 row = new TableRow(getBaseContext());
 
                 // TODO: Distance column에 값 추가
-                double distance = calculateDistance(scanResult.level);
-                textView = new TextView(getBaseContext());
-                textView.setText(String.format("    %.2f", distance));
-                row.addView(textView);
 
                 for (Field field : fields) {
                     textView = new TextView(getBaseContext());
@@ -154,15 +145,9 @@ public class MainActivity extends AppCompatActivity {
 
                 for (ScanResult scanResult : scanResultList) {
                     // TODO: AP 이름 변경
-                    if (scanResult.SSID.equals("sj")) {
-                        d1 = calculateDistance(scanResult.level);
-                    } else if (scanResult.SSID.equals("MK")) {
-                        d2 = calculateDistance(scanResult.level);
-                    } else if (scanResult.SSID.equals("iptime")) {
-                        d3 = calculateDistance(scanResult.level);
-                    }
                 }
 
+                // TODO: AP 좌표 변경
                 PointF currentPoint = calculatePosition(
                         new Point(20, 20),
                         new Point(10, -10),
@@ -185,15 +170,7 @@ public class MainActivity extends AppCompatActivity {
         double[][] positions = new double[][] { { p1.x, p1.y }, { p2.x, p2.y }, { p3.x, p3.y } };
         double[] distances = new double[] { d1, d2, d3 };
 
-        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(
-                new TrilaterationFunction(positions, distances),
-                new LevenbergMarquardtOptimizer());
-        LeastSquaresOptimizer.Optimum optimum = solver.solve();
-
-        // the answer
-        double[] centroid = optimum.getPoint().toArray();
-
-        return new PointF((float)centroid[0], (float)centroid[1]);
+        return new PointF();
     }
 
     @Override
