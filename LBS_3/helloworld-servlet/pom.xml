@@ -34,12 +34,85 @@
     <jetty.maven.plugin>9.4.3.v20170317</jetty.maven.plugin>
   </properties>
 
+  <!-- THINGS ONLY USED WHEN RUN LOCALLY -->
+  <profiles>
+    <profile>
+      <id>local</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.google.cloud.sql</groupId>
+          <artifactId>mysql-socket-factory</artifactId>
+          <version>1.0.2</version>
+        </dependency>
+        <dependency>                        <!-- http://dev.mysql.com/doc/connector-j/en/ -->
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.40</version>  <!-- v5.x.x is Java 7, v6.x.x is Java 8 -->
+        </dependency>
+        <dependency>
+          <groupId>com.google.api-client</groupId>
+          <artifactId>google-api-client-appengine</artifactId>
+          <version>1.21.0</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
   <dependencies>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>1.9.69</version>
+    </dependency>
+
     <dependency>                        <!-- REQUIRED -->
       <groupId>javax.servlet</groupId>  <!-- Java Servlet API -->
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
-      <scope>provided</scope>           <!-- Provided by the Jetty Servlet Container -->
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>           <!-- Provided by the Jetty Servlet engine -->
+    </dependency>
+
+    <dependency>                        <!-- Java Server Pages -->
+      <groupId>javax.servlet</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.0</version>
+    </dependency>
+
+    <dependency>                        <!-- JSP standard tag library -->
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+    <dependency>                        <!-- Apache Taglibs -->
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+
+    <dependency>                        <!-- Google Core Libraries for Java -->
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>  <!-- https://github.com/google/guava/wiki -->
+      <version>23.0</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>                        <!-- http://www.joda.org/joda-time/ -->
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>3.3.1</version>
+    </dependency>
+    <dependency>                        <!-- Google Cloud Client Library for Java -->
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+      <version>1.96.0</version>
     </dependency>
   </dependencies>
 
