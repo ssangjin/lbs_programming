@@ -15,38 +15,42 @@
 
 package com.example.appengine.gettingstartedjava.helloworld.data;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 // [START example]
 public class LocationData {
   // [START LocationData]
+  private Long id;
   private String userId;
   private Double latitude;
   private Double longitude;
   private String provider;
   private Float accuracy;
-  private List<WifiApData> wifiApDataList;
+  private Date date;
+
   // [END LocationData]
   // [START keys]
+  public static final String ID = "id";
   public static final String USER_ID = "userId";
   public static final String UPDATE_DATE = "updateDate";
   public static final String LATITUDE = "latitude";
   public static final String LONGITUDE = "longitude";
   public static final String PROVIDER = "provider";
   public static final String ACCURACY = "accuracy";
-  public static final String WIFI_DATA_LIST = "wifiApDataList";
   // [END keys]
 
   // [START constructor]
   // We use a Builder pattern here to simplify and standardize construction of LocationData objects.
   private LocationData(Builder builder) {
+    this.id = builder.id;
     this.userId = builder.userId;
     this.latitude = builder.latitude;
     this.longitude = builder.longitude;
     this.provider = builder.provider;
     this.accuracy = builder.accuracy;
-    this.wifiApDataList = new ArrayList<>(builder.wifiApDataList);
+    this.date = builder.date;
   }
 
   public String getUserId() {
@@ -69,46 +73,62 @@ public class LocationData {
     return accuracy;
   }
 
-  public List<WifiApData> getWifiApDataList() {
-    return wifiApDataList;
+  public Date getDate() {
+    return date;
+  }
+
+  public Long getId() {
+    return id;
   }
   // [END constructor]
 
   // [START builder]
   public static class Builder {
+    private Long id;
     private String userId;
     private Double latitude;
     private Double longitude;
     private String provider;
     private Float accuracy;
-    private List<WifiApData> wifiApDataList;
+    private Date date = new Date(System.currentTimeMillis());
 
     public LocationData build() {
       return new LocationData(this);
     }
 
-    public void setUserId(String userId) {
+    public Builder id(Long id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder userId(String userId) {
       this.userId = userId;
+      return this;
     }
 
-    public void setLatitude(Double latitude) {
+    public Builder latitude(Double latitude) {
       this.latitude = latitude;
+      return this;
     }
 
-    public void setLongitude(Double longitude) {
+    public Builder longitude(Double longitude) {
       this.longitude = longitude;
+      return this;
     }
 
-    public void setProvider(String provider) {
+    public Builder provider(String provider) {
       this.provider = provider;
+      return this;
     }
 
-    public void setAccuracy(Float accuracy) {
+    public Builder accuracy(Float accuracy) {
       this.accuracy = accuracy;
+      return this;
     }
 
-    public void setWifiApDataList(List<WifiApData> wifiApDataList) {
-      this.wifiApDataList = wifiApDataList;
+    public Builder date(Date date) {
+      this.date = date;
+      return this;
     }
   }
   // [END builder]
