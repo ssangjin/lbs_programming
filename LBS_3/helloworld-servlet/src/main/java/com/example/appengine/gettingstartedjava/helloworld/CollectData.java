@@ -20,22 +20,27 @@ public class CollectData extends HttpServlet {
         resp.setCharacterEncoding("euc-kr");
         PrintWriter out = resp.getWriter();
 
-        // [START LocationDataBuilder]
-        LocationData locationData = new LocationData.Builder()
-                .userId(req.getParameter(LocationData.USER_ID))   // form parameter
-                .latitude(Double.parseDouble(req.getParameter(LocationData.LATITUDE)))
-                .longitude(Double.parseDouble(req.getParameter(LocationData.LONGITUDE)))
-                .provider(req.getParameter(LocationData.PROVIDER))
-                .accuracy(Float.parseFloat(req.getParameter(LocationData.ACCURACY)))
-                .build();
-        // [END LocationDataBuilder]
-
-        LocationDataDao dao = dao = new DatastoreDao();
         try {
-            Long id = dao.createLocationData(locationData);
-            out.println("Data created. ID = " + id.toString() + " LocationData:" + locationData.toString());
+            // [START LocationDataBuilder]
+            LocationData locationData = new LocationData.Builder()
+                    .userId(req.getParameter(LocationData.USER_ID))   // form parameter
+                    .latitude(Double.parseDouble(req.getParameter(LocationData.LATITUDE)))
+                    .longitude(Double.parseDouble(req.getParameter(LocationData.LONGITUDE)))
+                    .provider(req.getParameter(LocationData.PROVIDER))
+                    .accuracy(Float.parseFloat(req.getParameter(LocationData.ACCURACY)))
+                    .build();
+            // [END LocationDataBuilder]
+
+            LocationDataDao dao = dao = new DatastoreDao();
+            try {
+                Long id = dao.createLocationData(locationData);
+                out.println("Data created. ID = " + id.toString() + " LocationData:" + locationData.toString());
+            } catch (Exception e) {
+                throw new ServletException("Error creating LocationData", e);
+            }
+
         } catch (Exception e) {
-            throw new ServletException("Error creating LocationData", e);
+            out.println(e.toString());
         }
 
     }

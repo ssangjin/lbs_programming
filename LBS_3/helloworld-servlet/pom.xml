@@ -18,7 +18,18 @@
 <project>                               <!-- REQUIRED -->
 
   <modelVersion>4.0.0</modelVersion>    <!-- REQUIRED -->
-  <packaging>war</packaging>            <!-- REQUIRED -->
+  <packaging>war</packaging>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-bom</artifactId>
+        <version>0.114.0-alpha</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>            <!-- REQUIRED -->
 
   <groupId>com.example.flex.helloworld</groupId>
   <artifactId>lbs-lec</artifactId> <!-- Name of your project -->
@@ -113,6 +124,10 @@
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
       <version>1.96.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-datastore</artifactId>
     </dependency>
   </dependencies>
 
