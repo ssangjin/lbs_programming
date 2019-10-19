@@ -38,13 +38,16 @@ public class DatastoreDao implements LocationDataDao {
 
     // [START entityToLocationData]
     public LocationData entityToLocationData(Entity entity) {
+        double d = (Double) entity.getProperty(LocationData.ACCURACY);
+        float f = (float) d;
+
         return new LocationData.Builder()                                     // Convert to LocationData form
                 .userId((String) entity.getProperty(LocationData.USER_ID))
                 .date((Date) entity.getProperty(LocationData.UPDATE_DATE))
                 .latitude((Double) entity.getProperty(LocationData.LATITUDE))
                 .longitude((Double) entity.getProperty(LocationData.LONGITUDE))
                 .provider((String) entity.getProperty(LocationData.PROVIDER))
-                .accuracy((Float) entity.getProperty(LocationData.ACCURACY))
+                .accuracy((Float) f)
                 .id((Long) entity.getProperty(LocationData.ID))
                 .build();
     }
@@ -114,24 +117,16 @@ public class DatastoreDao implements LocationDataDao {
 
     // [START listLocationDatas]
     @Override
-    public Result<LocationData> listLocationDatas(String startCursorString) {
-        FetchOptions fetchOptions = FetchOptions.Builder.withLimit(10); // Only show 10 at a time
-        if (startCursorString != null && !startCursorString.equals("")) {
-            fetchOptions.startCursor(Cursor.fromWebSafeString(startCursorString)); // Where we left off
-        }
+    public Result<LocationData> listLocationDatas(String userId) {
+        Query.Filter keyFilter = new Query.FilterPredicate(LocationData.USER_ID, Query.FilterOperator.EQUAL, userId);
         Query query = new Query(LocationData_KIND) // We only care about LocationDatas
+                .setFilter(keyFilter)
                 .addSort(LocationData.UPDATE_DATE, Query.SortDirection.ASCENDING); // Use default Index "title"
-        PreparedQuery preparedQuery = datastore.prepare(query);
-        QueryResultIterator<Entity> results = preparedQuery.asQueryResultIterator(fetchOptions);
 
-        List<LocationData> resultLocationDatas = entitiesToLocationDatas(results);     // Retrieve and convert Entities
-        Cursor cursor = results.getCursor();              // Where to start next time
-        if (cursor != null && resultLocationDatas.size() == 10) {         // Are we paging? Save Cursor
-            String cursorString = cursor.toWebSafeString();               // Cursors are WebSafe
-            return new Result<>(resultLocationDatas, cursorString);
-        } else {
-            return new Result<>(resultLocationDatas);
-        }
+        PreparedQuery preparedQuery = datastore.prepare(query);
+
+        List<LocationData> resultLocationDatas = entitiesToLocationDatas(preparedQuery.asIterator());     // Retrieve and convert Entities
+        return new Result<>(resultLocationDatas);
     }
     // [END listLocationDatas]
 }
