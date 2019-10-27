@@ -6,6 +6,8 @@ import com.example.data.LocationData;
 import com.example.data.Result;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,7 +33,7 @@ public class RequestData extends HttpServlet {
                 JsonArray jsonArray = new JsonArray();
                 Result<LocationData> locationDataResult = dao.listLocationDatas(userId);
                 for (LocationData location : locationDataResult.result) {
-                    jsonArray.add(gson.toJson(location));
+                    jsonArray.add(gson.toJsonTree(location));
                 }
                 out.println(jsonArray.toString());
             } catch (Exception e) {

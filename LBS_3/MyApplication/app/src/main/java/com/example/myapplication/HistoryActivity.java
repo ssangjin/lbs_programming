@@ -1,40 +1,22 @@
 package com.example.myapplication;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
-import android.view.View;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.location.*;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 public class HistoryActivity extends FragmentActivity implements OnMapReadyCallback {
     private String deviceId = "";
@@ -66,37 +48,11 @@ public class HistoryActivity extends FragmentActivity implements OnMapReadyCallb
         sb.append(MapsActivity.getDeviceId(this));
 
         Log.d("Result", "url:" + sb.toString());
-
         url = sb.toString();
 
         // Request a string response from the provided URL.
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d("Result", response.toString());
-
-                        Gson gson = new Gson();
-
-                        // maps 경로를 만든다.
-                        PolylineOptions polylineOptions = new PolylineOptions();
-                        polylineOptions.width(5)
-                                .color(Color.RED);
-
-                        for (int i = 0; i < response.length(); i++) {
-                            try {
-                                LocationData locationData = gson.fromJson(response.get(i).toString(), LocationData.class);
-                                double latitude = locationData.getLatitude();
-                                double longitude = locationData.getLongitude();
-                                polylineOptions.add(new LatLng(latitude, longitude));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        line = mMap.addPolyline(polylineOptions);
-                    }
-                }, new Response.ErrorListener() {
+                getResponseListener(), new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("Result", "on Error:" + error.toString());
@@ -105,6 +61,40 @@ public class HistoryActivity extends FragmentActivity implements OnMapReadyCallb
 
         // Add the request to the RequestQueue.
         queue.add(jsonObjectRequest);
+    }
+
+    private Response.Listener<JSONArray> getResponseListener() {
+        return new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.d("Result", response.toString());
+
+                Gson gson = new Gson();
+
+                // maps 경로를 만든다.
+                PolylineOptions polylineOptions = new PolylineOptions();
+                polylineOptions.width(5).color(Color.RED);
+
+                LocationData locationData = null;
+
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        locationData = gson.fromJson(response.get(i).toString(), LocationData.class);
+                        double latitude = locationData.getLatitude();
+                        double longitude = locationData.getLongitude();
+                        polylineOptions.add(new LatLng(latitude, longitude));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                line = mMap.addPolyline(polylineOptions);
+
+                if (locationData != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationData.getLatitude(), locationData.getLongitude()), 14));
+                }
+            }
+        };
     }
 
     /**
@@ -119,13 +109,6 @@ public class HistoryActivity extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.setMyLocationEnabled(true);
-
         requestHistory();
     }
 }
