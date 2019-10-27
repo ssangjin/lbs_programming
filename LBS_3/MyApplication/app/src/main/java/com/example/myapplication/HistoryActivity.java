@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -26,16 +27,23 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HistoryActivity extends FragmentActivity implements OnMapReadyCallback {
     private String deviceId = "";
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
 
     private GoogleMap mMap;
     RequestQueue queue;
+    private Polyline line;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +75,26 @@ public class HistoryActivity extends FragmentActivity implements OnMapReadyCallb
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.d("Result", response.toString());
+
+                        Gson gson = new Gson();
+
+                        // maps 경로를 만든다.
+                        PolylineOptions polylineOptions = new PolylineOptions();
+                        polylineOptions.width(5)
+                                .color(Color.RED);
+
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                LocationData locationData = gson.fromJson(response.get(i).toString(), LocationData.class);
+                                double latitude = locationData.getLatitude();
+                                double longitude = locationData.getLongitude();
+                                polylineOptions.add(new LatLng(latitude, longitude));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        line = mMap.addPolyline(polylineOptions);
                     }
                 }, new Response.ErrorListener() {
             @Override
