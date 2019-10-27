@@ -40,14 +40,6 @@ public class RequestStoreData extends HttpServlet {
         url = "jdbc:mysql://localhost:3306/lbs?user=root";
         log("connecting to: " + url);
         try {
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                Class.forName("com.mysql.jdbc.GoogleDriver");
-                Class.forName("com.google.cloud.sql.jdbc.Driver");
-
-            } catch (ClassNotFoundException e) {
-            }
-
             conn = DriverManager.getConnection(url);
         } catch (SQLException e) {
             throw new ServletException("Unable to connect to Cloud SQL", e);
