@@ -28,6 +28,12 @@
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
     <appengine.sdk.version>1.9.76</appengine.sdk.version>
+
+    <INSTANCE_CONNECTION_NAME>project:region:instance</INSTANCE_CONNECTION_NAME>
+    <user>root</user>
+    <password>myPassword</password>
+    <database>myDatabase</database>
+
   </properties>
 
   <prerequisites>
@@ -98,6 +104,18 @@
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-spanner</artifactId>
     </dependency>
+    <!-- [START gae_java8_mysql_dependencies] -->
+    <dependency> <!-- Only used locally -->
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.42</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud.sql</groupId>
+      <artifactId>mysql-socket-factory</artifactId>
+      <version>1.0.14</version>
+    </dependency>
+    <!-- [END gae_java8_mysql_dependencies] -->
   </dependencies>
 
   <build>
