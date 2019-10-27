@@ -49,7 +49,7 @@ public class RequestStoreData extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setCharacterEncoding("euc-kr");
+        resp.setContentType("application/json; charset=UTF-8");
         PrintWriter out = resp.getWriter();
         Gson gson = new Gson();
 
