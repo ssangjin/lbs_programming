@@ -148,14 +148,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
 
-        return deviceId;
+        return Integer.toString(deviceId.hashCode());
     }
 
     private void sendLog(Location location) {
         String url = null;
 
         StringBuffer sb = new StringBuffer();
-        sb.append("http://192.168.1.187:8080/collect_data?");
+        sb.append("http://192.168.10.27:8080/collect_data?");
         sb.append("userId=");
         sb.append(getDeviceId(this));
         sb.append("&latitude=");
