@@ -1,0 +1,2 @@
+include ':app1cipher'
+rootProject.name = "App1_Cipher"
