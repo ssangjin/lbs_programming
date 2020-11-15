@@ -39,22 +39,18 @@ public class MainActivity extends AppCompatActivity {
                 case Sensor.TYPE_ACCELEROMETER:
                     if (System.currentTimeMillis() - lastAccelerationEventTime > 100) {
                         lastAccelerationEventTime = System.currentTimeMillis();
-                        textViewValueX.setText(String.format("%3.2f", event.values[0]));
-                        textViewValueY.setText(String.format("%3.2f", event.values[1]));
-                        textViewValueZ.setText(String.format("%3.2f", event.values[2]));
+                        // TODO: Sensor 값 표출
                     }
                     break;
                 case Sensor.TYPE_ROTATION_VECTOR:
                     if (System.currentTimeMillis() - lastRotationEventTime > 100) {
                         lastRotationEventTime = System.currentTimeMillis();
 
-                        textViewRotationValueX.setText(String.format("%3.2f", event.values[0]));
-                        textViewRotationValueY.setText(String.format("%3.2f", event.values[1]));
-                        textViewRotationValueZ.setText(String.format("%3.2f", event.values[2]));
+                        // TODO: Sensor 값 표출
                     }
                     break;
                 case Sensor.TYPE_STEP_COUNTER:
-                    textViewStepCountValue.setText(String.format("%8.0f", event.values[0]));
+                    // TODO: Sensor 값 표출
                     break;
             }
         }
@@ -70,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sensorManager = (SensorManager)
-                getSystemService(Context.SENSOR_SERVICE);
+        // TODO: SensorManager 등록
 
         showSensorList();
 
@@ -87,30 +82,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showSensorList() {
-        List<Sensor> sensorList =
-                sensorManager.getSensorList(Sensor.TYPE_ALL);
-        for (Sensor sensor : sensorList) {
-            Log.e("SensorList", sensor.toString());
-        }
+        // TODO: Sensor 리스트 출력
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(sensorEventListener, accelerationSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
-        rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        sensorManager.registerListener(sensorEventListener, rotationVectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
-        stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        sensorManager.registerListener(sensorEventListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        // TODO: Sensor 등록
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(sensorEventListener);
+        // TODO: Sensor 등록 취소
     }
 }
