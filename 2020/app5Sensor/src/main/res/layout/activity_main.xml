@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textViewStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Step Count"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewStepCountValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/textViewStep"
+        app:layout_constraintTop_toTopOf="@+id/textViewStep" />
+
+    <TextView
+        android:id="@+id/textViewAccelerometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="ACCELEROMETER"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewX"
+        app:layout_constraintTop_toTopOf="@+id/textViewStep"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewRotationVector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="ROTATION_VECTOR"
+        app:layout_constraintLeft_toRightOf="@+id/textViewAccelerometer"
+        app:layout_constraintTop_toTopOf="@+id/textViewStep"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="X"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textViewAccelerometer"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewValueX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="0"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewAccelerometer"
+        app:layout_constraintTop_toTopOf="@+id/textViewX" />
+
+    <TextView
+        android:id="@+id/textViewY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Y"
+        app:layout_constraintStart_toStartOf="@+id/textViewX"
+        app:layout_constraintTop_toBottomOf="@+id/textViewX"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewValueY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="0"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewAccelerometer"
+        app:layout_constraintTop_toTopOf="@+id/textViewY" />
+
+    <TextView
+        android:id="@+id/textViewZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Z"
+        app:layout_constraintStart_toStartOf="@+id/textViewY"
+        app:layout_constraintTop_toBottomOf="@+id/textViewY"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:id="@+id/textViewValueZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:layout_marginStart="30dp"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewAccelerometer"
+        app:layout_constraintTop_toTopOf="@+id/textViewZ" />
+
+    <TextView
+        android:id="@+id/textViewRotationValueX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="0"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewRotationVector"
+        app:layout_constraintTop_toTopOf="@+id/textViewX" />
+
+    <TextView
+        android:id="@+id/textViewRotationValueY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="0"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewRotationVector"
+        app:layout_constraintTop_toTopOf="@+id/textViewY" />
+
+    <TextView
+        android:id="@+id/textViewRotationValueZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:layout_marginStart="30dp"
+        app:layout_constraintLeft_toLeftOf="@+id/textViewRotationVector"
+        app:layout_constraintTop_toTopOf="@+id/textViewZ" />
+</androidx.constraintlayout.widget.ConstraintLayout>
