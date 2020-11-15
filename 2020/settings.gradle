@@ -1,2 +1,2 @@
-include ':app1cipher', ':app2Location', ':app3Fused'
+include ':app1cipher', ':app2Location', ':app3Fused', ':app4Maps'
 rootProject.name = "App1_Cipher"
