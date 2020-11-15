@@ -1,35 +1,46 @@
-package com.lbs.programming.lbs_1_1;
+package com.lbs.programming.lbs_1_2;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.provider.Settings;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-// TODO: LocationListener 구현.
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
+public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
-    private LocationManager locationManager;
+
     private TextView latitudeTextView;
     private TextView longitudeTextView;
+    private LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            // TODO: 수신된 위치값 사용.
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         latitudeTextView = findViewById(R.id.textViewLatitude);
         longitudeTextView = findViewById(R.id.textViewLongitude);
-
-        // TODO: LocationManager 객체 얻어오기(getSystemService 사용)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
@@ -50,24 +61,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLocationService() {
-        boolean enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        // check if enabled and if not send user to the GSP settings
-        // Better solution would be to display a dialog and suggesting to
-        // go to the settings
-        if (!enabled) {
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        LocationRequest locationRequest = getLocationRequest();
 
+        // Create LocationSettingsRequest object using location request
+        LocationSettingsRequest locationSettingsRequest = getLocationSettingsRequest(locationRequest);
+
+        // Check whether location settings are satisfied
+        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest);
+
+        getLastLocation();
+
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        // TODO: requestLocationUpdates
+    }
+
+    private void getLastLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
-        // TODO: LocationManager에서 초기 위치를 받음. getLastKnownLocation
+        Task<Location> result = LocationServices.getFusedLocationProviderClient(this).getLastLocation();
+        // TODO: task에 listener 등록하여 처리.
+    }
 
-        // TODO: onLocationChanged를 호출하여 화면 업데이트.
+    @NonNull
+    private LocationSettingsRequest getLocationSettingsRequest(LocationRequest locationRequest) {
+        // TODO: LocationSettingsRequest 객체 생성
+        return null;
+    }
+
+    @NonNull
+    private LocationRequest getLocationRequest() {
+        // TODO: LocationRequest 객체 생성.
+        return null;
     }
 
     @Override
@@ -78,18 +109,24 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: requestLocationUpdates 호출
+        startLocationService();
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
-        // TODO: removeUpdates 호출
+        // TODO: removeLocationUpdates
+
+        super.onPause();
     }
 
-    // TODO: onLocationChanged 구현. TextView에 값을 넣어줌.
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            latitudeTextView.setText(Double.toString(location.getLatitude()));
+            longitudeTextView.setText(Double.toString(location.getLongitude()));
+        }
+    }
 }
